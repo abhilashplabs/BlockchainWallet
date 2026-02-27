@@ -1,4 +1,10 @@
 package com.web3.dto;
 
-public record TransferRequest() {
+import java.math.BigDecimal;
+
+public record TransferRequest(
+        String privateKey,
+        String toAddress,
+        BigDecimal amount
+) {
 }

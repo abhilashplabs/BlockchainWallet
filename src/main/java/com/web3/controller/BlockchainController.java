@@ -1,6 +1,8 @@
 package com.web3.controller;
 
 import com.web3.dto.CreateWalletRequest;
+import com.web3.dto.StoreWalletRequest;
+import com.web3.dto.TransferRequest;
 import com.web3.dto.WalletBalanceResponse;
 import com.web3.service.BlockchainService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +39,43 @@ public class BlockchainController {
         }
     }
 
-    @PostMapping("/create")
+    @PostMapping("/createAndLoadAccount")
     public  ResponseEntity<?> createWallet(@RequestBody CreateWalletRequest request){
         try{
             Map<String,String> result = blockchainService.createAndLoadAccount(request.password());
             return ResponseEntity.ok(result);
         }catch (Exception e){
             return ResponseEntity.status(500).body("Error"+ e.getMessage());
+        }
+    }
+
+    @PostMapping("/store")
+    public ResponseEntity<String> storeWallet(@RequestBody StoreWalletRequest request) {
+        blockchainService.storeAddress(request.label(), request.address());
+        return ResponseEntity.ok("Address stored under label: " + request.label());
+    }
+
+    // 2. Load and show all balances
+    @GetMapping("/load-all")
+    public ResponseEntity<Map<String, BigDecimal>> loadAllBalances() {
+        try {
+            return ResponseEntity.ok(blockchainService.getAllBalances());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @PostMapping("/transfer")
+    public ResponseEntity<String> SendFunds(@RequestBody TransferRequest request){
+        try{
+            String txnHash = blockchainService.transferEth(
+                    request.privateKey(),
+                    request.toAddress(),
+                    request.amount()
+            );
+            return ResponseEntity.status(200).body("Sccuess"+ txnHash);
+        }catch (Exception e){
+            return ResponseEntity.status(500).body("Transaction Failed" + e.getMessage());
         }
     }
 }
