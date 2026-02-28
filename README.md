@@ -46,7 +46,8 @@ npx hardhat node
 ```
 ### 3. Build
 ```
-git clone [https://github.com/abhilashplabs/BlockchainWallet.git](https://github.com/abhilashplabs/BlockchainWallet.git)
+
+git clone [[https://github.com/abhilashplabs/BlockchainWallet.git](https://github.com/abhilashplabs/Blockchain-Wallet.git)](https://github.com/abhilashplabs/Blockchain-Wallet.git)
 cd BlockchainWallet
 ./mvnw clean spring-boot:run
 ```
