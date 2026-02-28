@@ -53,9 +53,12 @@ The application will start on http://localhost:8080.
 
 ### 4. API Reference
 Method,Endpoint,Description
-POST,/api/wallet/create,Generates and saves a new encrypted wallet file.
-POST,/api/wallet/store,Adds an address and label to the internal watchlist.
-GET,/api/wallet/balances,Loads live balances for all stored addresses.
+
+
+|POST,/api/wallet/create,Generates and saves a new encrypted wallet file.|
+
+|POST,/api/wallet/store,Adds an address and label to the internal watchlist.|
+|GET,/api/wallet/balances,Loads live balances for all stored addresses.|
 
 ### 5. Blockchain Operations
 Method,Endpoint,Description
