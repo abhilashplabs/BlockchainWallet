@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Map;
 
 @RestController
@@ -73,9 +74,15 @@ public class BlockchainController {
                     request.toAddress(),
                     request.amount()
             );
-            return ResponseEntity.status(200).body("Sccuess"+ txnHash);
+            return ResponseEntity.status(200).body("Success"+ txnHash);
         }catch (Exception e){
             return ResponseEntity.status(500).body("Transaction Failed" + e.getMessage());
         }
+    }
+
+    @GetMapping("/estimateGasPrice")
+    public Map<String, BigDecimal> estimate() throws Exception {
+        Map<String,BigDecimal> gasPrice = blockchainService.estimateGasPrice();
+        return gasPrice;
     }
 }

@@ -8,6 +8,8 @@ import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthEstimateGas;
+import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.Transfer;
@@ -15,6 +17,7 @@ import org.web3j.utils.Convert;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,6 +84,18 @@ public class BlockchainService {
         ).send();
 
         return receipt.getTransactionHash();
+    }
+
+    public Map<String,BigDecimal> estimateGasPrice() throws Exception{
+        EthGasPrice gasPrice = web3j.ethGasPrice().send();
+        BigDecimal base = Convert.fromWei(gasPrice.getGasPrice().toString(),Convert.Unit.GWEI);
+
+        Map<String,BigDecimal> estimate = new HashMap<>();
+        estimate.put("SafeLow",base);
+        estimate.put("Standard",base.multiply(BigDecimal.valueOf(12)).divide(BigDecimal.valueOf(10)));
+        estimate.put("Fast",base.multiply(BigDecimal.valueOf(15)).divide(BigDecimal.valueOf(10)));
+        return estimate;
+
     }
 
 }
