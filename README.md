@@ -67,7 +67,7 @@ Method,Endpoint,Description
 | ------- | --- | --- |
 | GET | /api/wallet/balance/{address} | Get balance for a specific address. |
 | POST | /api/wallet/transfer | Transfers ETH from a source private key to a destination. |
-| GET | /api/wallet/nonce/{address}| Gets the next valid transaction nonce. |
+| GET | /api/wallet/estimateGasPrice| Estimate the gasprice for the transaction |
 
 ### 6. Engineering Best Practices
 
