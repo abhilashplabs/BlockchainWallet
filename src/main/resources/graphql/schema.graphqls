@@ -1,0 +1,15 @@
+type Query {
+    # Fetch all stored transactions from Postgres
+    allTransactions: [Transaction]
+    # Fetch activity for a specific wallet address
+    accountActivity(address: String!): [Transaction]
+}
+
+type Transaction {
+    txnHash: String!
+    fromAddress: String!
+    toAddress: String!
+    value: Float
+    blockNumber: Int
+    indexedAt: String
+}

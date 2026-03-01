@@ -1,5 +1,9 @@
 package com.web3.service;
 
+import com.web3.entity.CreateWallet;
+import com.web3.entity.TransactionRecord;
+import com.web3.repository.CreateWalletRepository;
+import com.web3.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.web3j.crypto.Credentials;
@@ -18,7 +22,9 @@ import org.web3j.utils.Convert;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,6 +33,22 @@ public class BlockchainService {
 
     @Autowired
     private Web3j web3j;
+
+    @Autowired
+    TransactionRepository transactionRepository;
+
+    @Autowired
+    CreateWalletRepository createWalletRepository;
+
+
+    public List<TransactionRecord> getAllTransactions() {
+        return transactionRepository.findAll();
+    }
+
+    public List<TransactionRecord> getTransactionsByAddress(String address) {
+        // Fetches transactions where the address is either the sender or receiver
+        return transactionRepository.findByFromAddressOrToAddress(address, address);
+    }
 
     public BigDecimal getBalanceInEther(String walletAdddress) throws Exception{
         EthGetBalance ethGetBalance = web3j
@@ -57,8 +79,18 @@ public class BlockchainService {
     // Thread-safe in-memory storage for wallet addresses
     private final Map<String,String> walletStorage = new ConcurrentHashMap<>();
 
-    public void storeAddress(String label, String address){
-        walletStorage.put(label,address);
+    public CreateWallet storeAddress(String label, String address){
+
+        if (label == null || address == null) {
+            throw new IllegalArgumentException("Label or Address is missing in the request");
+        }
+
+        if(createWalletRepository.existsByLabel(label)){
+            throw new RuntimeException("A wallet with this label is already in use");
+        }
+
+        CreateWallet wallet = new CreateWallet(label, address);
+        return createWalletRepository.save(wallet);
     }
 
     public Map<String, BigDecimal> getAllBalances() throws Exception{
@@ -82,6 +114,16 @@ public class BlockchainService {
                 amount,
                 Convert.Unit.ETHER
         ).send();
+
+        TransactionRecord transaction = new TransactionRecord();
+        transaction.setTxnHash(receipt.getTransactionHash());
+        transaction.setFromAddress(receipt.getFrom());
+        transaction.setToAddress(receipt.getTo());
+        transaction.setValue(amount);
+        transaction.setBlockNumber(receipt.getBlockNumber().longValue());
+        transaction.setIndexedAt(LocalDateTime.now());
+
+        transactionRepository.save(transaction);
 
         return receipt.getTransactionHash();
     }
